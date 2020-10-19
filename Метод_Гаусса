@@ -136,53 +136,6 @@ float* gaus_matrix(float **&mt, unsigned n, float*&x)
    return x;
 }
 
-
-void nevyazki (float **&mt,float *&x, unsigned n)
-{
-    float* d= new float[n];
-    float* y= new float[n];
-    bool flag=true;
-    for (unsigned i=0; i<n; i++)
-    {
-        d[i]=mt[i][n];
-        for (unsigned j=0; j<n; j++)
-        {
-            d[i]-=mt[i][j]*x[j];
-        }
-        if ((abs(d[i]))>0.001)
-          {
-             flag=false;
-          }
-    }
-
-    if (flag==false)
-    {
-       matrix(mt,n);
-        for(unsigned i=0;i>n;i++)
-       {
-         mt[n+1][i]=d[i];
-         for (unsigned j=0; j<n; j++)
-           {
-               mt[i][j]=mt[i][j]*x[j];
-           }
-       }
-      y=gaus_matrix(mt,n,y);
-      for(unsigned i=0;i>n;i++)
-        {
-            x[i]=x[i]+y[i];
-        }
-      nevyazki(mt,x,n);
-    }
-    cout<<endl;
-    cout<<"nevyazki: "<<endl;
-    for (unsigned i = 0; i<n; i++)
-       {
-          cout<<"x"<<i+1<<": "<< x[i] <<endl;
-       }
-}
-
-
-
 float **a;
 unsigned n=5;
 
@@ -197,7 +150,6 @@ int main()
     float* x= new float[n];
     matrix(a,n);
     x=gaus_matrix(a,n,x);    
-    nevyazki(a,x,n);
     for (unsigned i = 0; i < n; i++)
       {
         delete[] a[i];
