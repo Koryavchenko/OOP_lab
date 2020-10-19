@@ -197,7 +197,7 @@ int main()
     float* x= new float[n];
     matrix(a,n);
     x=gaus_matrix(a,n,x);    
-    
+    nevyazki(a,x,n);
     for (unsigned i = 0; i < n; i++)
       {
         delete[] a[i];
