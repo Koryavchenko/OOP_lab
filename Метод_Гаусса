@@ -1,0 +1,208 @@
+#include <iostream>
+#include <locale.h>
+#include <stdio.h>
+#include <math.h>
+#include <ctime>
+#include <cstdlib>
+#include<iomanip>
+
+using namespace std;
+
+void print_matrix(float** &mt,unsigned n)
+{
+    for (unsigned i = 0; i < n; i++)
+      {
+        for (unsigned j = 0; j < n+1; j++)
+        {
+            cout << setprecision(4) << setw(8);
+            cout<< mt[i][j];
+        }
+        cout<< endl;
+      }
+    cout << endl;
+}
+
+void matrix(float **&mt ,unsigned n)
+{
+    mt[0][0]=-0.02;
+    mt[0][1]=-0.66;
+    mt[0][2]=0.46;
+    mt[0][3]=0.62;
+    mt[0][4]=0.83;
+    mt[0][5]=0.24;
+
+    mt[1][0]=0.52;
+    mt[1][1]=-0.59;
+    mt[1][2]=-0.46;
+    mt[1][3]=0.63;
+    mt[1][4]=-0.68;
+    mt[1][5]=-0.98;
+
+    mt[2][0]=0.28;
+    mt[2][1]=-0.8;
+    mt[2][2]=-0.24;
+    mt[2][3]=-0.51;
+    mt[2][4]=0.98;
+    mt[2][5]=-0.94;
+
+    mt[3][0]=0.38;
+    mt[3][1]=-0.97;
+    mt[3][2]=-0.46;
+    mt[3][3]=0.27;
+    mt[3][4]=-0.45;
+    mt[3][5]=-0.84;
+
+    mt[4][0]=0.17;
+    mt[4][1]=0.33;
+    mt[4][2]=-0.28;
+    mt[4][3]=-0.94;
+    mt[4][4]=-0.92;
+    mt[4][5]=-0.79;
+
+    cout<<"Matrix"<<endl;
+    print_matrix(mt,n);
+
+}
+
+float* gaus_matrix(float **&mt, unsigned n, float*&x)
+{
+   float y;
+
+   for (unsigned k=0; k < n; k++)
+      {
+          if (mt[k][k]==0)
+             {
+                 for (unsigned i=0; i<n; i++)
+                 {
+                     if (mt[i][0]!=0)
+                     {
+                         for (unsigned j=0; j<n+1; j++)
+                            {
+                             y=mt[i][j];
+                             mt[i][j]=mt[0][j];
+                             mt[0][j]=y;
+                             }
+                          break;
+                      }
+                 }
+             }
+
+    for (unsigned j=1; j<n+1; j++)
+       for (unsigned i=1; i<n; i++)
+          {
+            if ((i>k)&&(j>k))
+               {
+                  mt[i][j]=(mt[i][j]*mt[k][k]-mt[k][j]*mt[i][k])/mt[k][k];
+               }
+          }
+
+    for (unsigned j=k+1; j<n+1; j++)
+       {
+           if ((mt[k][k]!=0))
+              {
+                  mt[k][j]=mt[k][j]/mt[k][k];
+              }
+        }
+        mt[k][k]=mt[k][k]/mt[k][k];
+
+     for (unsigned j=k; j<n+1; j++)
+         for (unsigned i=k; i<n; i++)
+            {
+              if (i!=k)
+                  {
+                      mt[i][k]=0;
+                  }
+            }
+     cout <<k+1<<" step: "<<endl;
+     print_matrix(mt,n);
+     cout << endl;
+   }
+
+
+   //float* x= new float[n];
+   for (int i = n-1; i>=0;i-- )
+   {
+       x[i]= mt[i][n];
+       for (int j = n; j>i ;j-- )
+       {
+           x[i] -=mt[i][j]*x[j];
+       }
+   }
+
+    for (unsigned i = 0; i<n; i++)
+       {
+          cout<<"x"<<i+1<<": "<< x[i] <<endl;
+       }
+   return x;
+}
+
+
+void nevyazki (float **&mt,float *&x, unsigned n)
+{
+    float* d= new float[n];
+    float* y= new float[n];
+    bool flag=true;
+    for (unsigned i=0; i<n; i++)
+    {
+        d[i]=mt[i][n];
+        for (unsigned j=0; j<n; j++)
+        {
+            d[i]-=mt[i][j]*x[j];
+        }
+        if ((abs(d[i]))>0.001)
+          {
+             flag=false;
+          }
+    }
+
+    if (flag==false)
+    {
+       matrix(mt,n);
+        for(unsigned i=0;i>n;i++)
+       {
+         mt[n+1][i]=d[i];
+         for (unsigned j=0; j<n; j++)
+           {
+               mt[i][j]=mt[i][j]*x[j];
+           }
+       }
+      y=gaus_matrix(mt,n,y);
+      for(unsigned i=0;i>n;i++)
+        {
+            x[i]=x[i]+y[i];
+        }
+      nevyazki(mt,x,n);
+    }
+    cout<<endl;
+    cout<<"nevyazki: "<<endl;
+    for (unsigned i = 0; i<n; i++)
+       {
+          cout<<"x"<<i+1<<": "<< x[i] <<endl;
+       }
+}
+
+
+
+float **a;
+unsigned n=5;
+
+int main()
+{
+    a = new float* [n];
+    for (unsigned i = 0; i < n; i++)
+    {
+        a[i] = new float[n+1];
+    }
+
+    float* x= new float[n];
+    matrix(a,n);
+    x=gaus_matrix(a,n,x);    
+    
+    for (unsigned i = 0; i < n; i++)
+      {
+        delete[] a[i];
+      }
+    delete[] a;
+
+    return 0;
+}
